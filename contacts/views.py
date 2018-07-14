@@ -9,7 +9,10 @@ def create_contact(request):
     return JsonResponse(c.json)
 
 def query_contacts(request):
-    cs = Contact.objects.filter(**json.loads(request.body))
+    if request.body:
+        cs = Contact.objects.filter(**json.loads(request.body))
+    else:
+        cs = Contact.objects.all()
     return JsonResponse([c.json for c in cs], safe=False)
 
 def get_contact(request, pk):
