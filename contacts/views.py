@@ -6,6 +6,15 @@ from django.contrib.auth import authenticate
 from contacts.models import Contact
 import json
 from base64 import b64decode
+from datetime import datetime
+from pytz import utc
+
+
+READ_ONLY_FIELDS = ['created', 'created_by', 'modified', 'modified_by', 'pk']
+
+
+def utcnow():
+    return datetime.utcnow().replace(tzinfo=utc)
 
 
 def require_authentication(fn):
@@ -25,8 +34,12 @@ def require_authentication(fn):
 
 @require_authentication
 def create_contact(request):
-    c = Contact.objects.create(**json.loads(request.body))
-    return JsonResponse(c.json)
+    parameters = json.loads(request.body)
+    if set(parameters) & set(READ_ONLY_FIELDS):
+        return HttpResponseBadRequest()
+    parameters['created_by'] = request.user
+    c = Contact.objects.create(**parameters)
+    return JsonResponse(c.data_dict)
 
 
 def query_contacts(request):
@@ -34,12 +47,12 @@ def query_contacts(request):
         cs = Contact.objects.filter(**json.loads(request.body))
     else:
         cs = Contact.objects.all()
-    return JsonResponse([c.json for c in cs], safe=False)
+    return JsonResponse([c.data_dict for c in cs], safe=False)
 
 
 def get_contact(request, pk):
     c = Contact.objects.get(pk=pk)
-    return JsonResponse(c.json)
+    return JsonResponse(c.data_dict)
 
 
 @require_authentication
@@ -47,14 +60,19 @@ def update_contact(request, pk):
     cs = Contact.objects.filter(pk=pk)
     if cs.count() != 1:
         raise Contact.DoesNotExist
-    cs.update(**json.loads(request.body))
-    return JsonResponse(cs[0].json)
+    parameters = json.loads(request.body)
+    if set(parameters) & set(READ_ONLY_FIELDS):
+        return HttpResponseBadRequest()
+    parameters['modified_by'] = request.user
+    parameters['modified'] = utcnow()
+    cs.update(**parameters)
+    return JsonResponse(cs[0].data_dict)
 
 
 @require_authentication
 def delete_contact(request, pk):
     c = Contact.objects.get(pk=pk)
-    deleted_json = c.json
+    deleted_json = c.data_dict
     c.delete()
     return JsonResponse(deleted_json)
 

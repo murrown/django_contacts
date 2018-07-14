@@ -10,6 +10,8 @@ class Command(BaseCommand):
         management.call_command('migrate', verbosity=0)
         User.objects.create_user(username='test_user',
                                  password='test_password')
+        User.objects.create_user(username='test_user2',
+                                 password='test_password2')
         data = [
             {'name': 'Sylvester', 'phone_number': '3162020',
              'address': 'Tynewear', 'email': 'smallpoisonman@beattle.edu'},
