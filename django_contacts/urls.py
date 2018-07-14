@@ -1,10 +1,7 @@
-from django.contrib import admin
-from django.urls import path
-from django.db import connection
+from django.urls import re_path
+from contacts.views import call_api, call_api_pk
 
 urlpatterns = [
+    re_path('^api/(?P<pk>\d+)/?$', call_api_pk),
+    re_path('^api/?$', call_api),
 ]
-
-if connection.settings_dict['NAME'] == ':memory:':
-    from django.core import management
-    management.call_command('migrate')
