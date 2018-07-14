@@ -3,10 +3,10 @@ from django.core.serializers import serialize
 import json
 
 class Contact(models.Model):
-    name = models.TextField(null=False)
-    phone_number = models.IntegerField(null=True)
-    address = models.TextField(null=True)
-    email = models.CharField(max_length=254, null=True)
+    name = models.TextField(default=None)
+    phone_number = models.CharField(max_length=15, default='')
+    address = models.TextField(default='')
+    email = models.CharField(max_length=254, default='')
 
     @property
     def json(self):
