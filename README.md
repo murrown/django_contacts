@@ -2,17 +2,18 @@
 Author: [Nathan Murrow (murrown)](https://www.linkedin.com/in/nathan-murrow)
 
 ## Deployment
-This project requires Python 3 and Django version 2.0.6.
+This project requires Python 3.6+ and Django version 2.0.6+.
 ```
-> pip3 install django==2.0.6
+git clone https://github.com/murrown/django_contacts.git && cd django_contacts
+pip3 install -r pip3_requirements.txt
 ```
 There are some unit/integration tests for testing each of the API endpoints. Verify that they pass like so:
 ```
-> ./manage.py test -v2
+./manage.py test -v2
 ```
 To run the server, you must use **testserver**, not **runserver**. This is because the database is stored entirely in memory, so the application needs to load a fixture from a file. **empty_fixture.json** contains two users and no data.
 ```
-> ./manage.py testserver empty_fixture.json
+./manage.py testserver empty_fixture.json
 ```
 Alternatively, use **contacts/fixtures/test_fixture.json** to start with some initial test data.
 
