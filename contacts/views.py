@@ -1,12 +1,13 @@
-from django.http import (
-    JsonResponse,
-    HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden)
-from django.contrib.auth import authenticate
-from contacts.models import Contact
 import json
 from base64 import b64decode
 from datetime import datetime
 from pytz import utc
+
+from django.contrib.auth import authenticate
+from django.http import (
+    JsonResponse,
+    HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden)
+from contacts.models import Contact
 
 
 READ_ONLY_FIELDS = ['created', 'created_by', 'modified', 'modified_by', 'pk']

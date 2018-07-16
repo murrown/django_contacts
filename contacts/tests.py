@@ -1,9 +1,10 @@
-from django.test import TestCase
-from contacts.models import Contact
-from contacts.views import READ_ONLY_FIELDS
 import json
 from base64 import b64encode
 from time import sleep
+
+from django.test import TestCase
+from contacts.models import Contact
+from contacts.views import READ_ONLY_FIELDS
 
 
 class TestAPI(TestCase):

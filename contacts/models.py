@@ -1,7 +1,9 @@
-from django.db import models
-from django.core.serializers import serialize
-from django.contrib.auth.models import User
 import json
+
+from django.contrib.auth.models import User
+from django.core.serializers import serialize
+from django.db import models
+
 
 class Contact(models.Model):
     name = models.TextField(default=None)
