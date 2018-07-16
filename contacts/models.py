@@ -6,6 +6,9 @@ from django.db import models
 
 
 class Contact(models.Model):
+    """
+    The Contact model. Stores the information for a single contact.
+    """
     name = models.TextField(default=None)
     phone_number = models.CharField(max_length=15, default='')
     address = models.TextField(default='')
@@ -19,6 +22,10 @@ class Contact(models.Model):
 
     @property
     def data_dict(self):
+        """
+        @return: A data dictionary containing all of this contact's
+            information, suitable for a JSON response to an API request.
+        """
         data = json.loads(serialize('json', [self]))[0]['fields']
         data['pk'] = self.pk
         return data
