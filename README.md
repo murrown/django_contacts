@@ -2,7 +2,7 @@
 Author: [Nathan Murrow (murrown)](https://www.linkedin.com/in/nathan-murrow)
 
 ## Deployment
-This project requires Python 3.6+ and Django version 2.0.6+.
+This project requires Python >= 3.6 and Django >= 2.0.6.
 ```
 git clone https://github.com/murrown/django_contacts.git && cd django_contacts
 pip3 install -r pip3_requirements.txt
@@ -26,6 +26,10 @@ GET | /api/**&lt;pk&gt;** |  |  | Get a contact.
 PATCH | /api/**&lt;pk&gt;** | :heavy_check_mark: | :heavy_check_mark: | Replace a contact's data.
 GET | /api/ | :heavy_check_mark: |  | Get a list of contacts (filterable).
 DELETE | /api/**&lt;pk&gt;** |  | :heavy_check_mark: | Delete a contact.
+
+The editable contact fields are **name**, **phone_number**, **address**, and **email**.
+
+Additionally, contacts can be filtered by **created**, **created_by**, **modified**, **modified_by**, and **pk**.
 
 The server will respond with **HTTP 200: OK** or **HTTP 400: Bad Request** depending on whether the request is successful or not. If authentication is required and fails, it will respond with **HTTP 403: Forbidden**.
 
