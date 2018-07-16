@@ -29,6 +29,12 @@ class TestAPI(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(Contact.objects.count(), num_contacts)
 
+        auth = b'Basic ' + b64encode(b'test_user:wrong_password')
+        auth_headers = {'HTTP_AUTHORIZATION': auth.decode()}
+        response = self.client.generic('POST', '/api/', data, **auth_headers)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Contact.objects.count(), num_contacts)
+
     def test_get_contact(self):
         pk = 1
         c = Contact.objects.get(pk=pk)
@@ -53,16 +59,28 @@ class TestAPI(TestCase):
         new_data = c.data_dict
         self.assertEqual(Contact.objects.get(pk=pk).name, 'Jessie')
         self.assertEqual(c.modified_by.username, 'test_user')
+        self.assertNotEqual(new_data['name'], old_data['name'])
         self.assertNotEqual(new_data['modified_by'], old_data['modified_by'])
         self.assertGreater(new_data['modified'], new_data['created'])
         self.assertGreater(new_data['modified'], old_data['modified'])
 
     def test_replace_contact_data_unauthenticated(self):
         pk = 1
+        c = Contact.objects.get(pk=pk)
+        old_data = c.data_dict
         data = json.dumps({'name': 'Evette'})
         response = self.client.generic('PATCH', '/api/%s' % pk, data)
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(Contact.objects.get(pk=pk).name, 'Evette')
+
+        auth = b'Basic ' + b64encode(b'test_user:wrong_password')
+        auth_headers = {'HTTP_AUTHORIZATION': auth.decode()}
+        response = self.client.generic('PATCH', '/api/%s' % pk, data,
+                                       **auth_headers)
+        self.assertEqual(response.status_code, 403)
+        self.assertNotEqual(Contact.objects.get(pk=pk).name, 'Evette')
+        self.assertEqual(c.data_dict['name'], old_data['name'])
+        self.assertEqual(c.data_dict['modified_by'], old_data['modified_by'])
 
     def test_get_contact_list(self):
         response = self.client.generic('GET', '/api/')
@@ -88,6 +106,13 @@ class TestAPI(TestCase):
         pk = 1
         num_contacts = Contact.objects.count()
         response = self.client.generic('DELETE', '/api/%s' % pk)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Contact.objects.count(), num_contacts)
+
+        auth = b'Basic ' + b64encode(b'test_user:wrong_password')
+        auth_headers = {'HTTP_AUTHORIZATION': auth.decode()}
+        response = self.client.generic('DELETE', '/api/%s' % pk,
+                                       **auth_headers)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(Contact.objects.count(), num_contacts)
 
