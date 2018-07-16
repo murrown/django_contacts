@@ -87,10 +87,15 @@ class TestAPI(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content.decode())),
                          Contact.objects.count())
-        data = json.dumps({'address': 'Lambsbridge'})
+        data = json.dumps({'address__icontains': 'lambs'})
         response = self.client.generic('GET', '/api/', data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content.decode())), 2)
+
+        data = json.dumps({'address__iregex': 'lambs'})
+        response = self.client.generic('GET', '/api/', data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content, b'')
 
     def test_delete_contact(self):
         pk = 1

@@ -68,7 +68,7 @@ Now let's update our contact with the missing information. The only fields that 
 ```
 Notice that because we authenticated with a different user, the `created_by` and `modified_by` fields are different.
 
-Let's search our contacts for everyone living at Radham with a primary key greater than or equal to 3. The field lookup conventions are the same as for Django `filter()` queries.
+What about making queries? The field lookup conventions are the same as for Django `filter()` queries. [[Link]](https://docs.djangoproject.com/en/2.0/ref/models/querysets/#field-lookups) (Regex queries are not allowed for safety reasons.) Let's search our contacts for everyone living at Radham with a primary key greater than or equal to 3.
 ```
 > curl -X GET 127.0.0.1:8000/api/ --data '{"address__icontains": "radham", "pk__gte": 3}'
 [

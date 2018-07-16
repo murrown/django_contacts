@@ -62,7 +62,10 @@ def query_contacts(request):
         the filter parameters.
     """
     if request.body:
-        cs = Contact.objects.filter(**json.loads(request.body.decode()))
+        parameters = json.loads(request.body.decode())
+        if any([key.lower().endswith('regex') for key in parameters]):
+            return HttpResponseBadRequest()
+        cs = Contact.objects.filter(**parameters)
     else:
         cs = Contact.objects.all()
     return JsonResponse([c.data_dict for c in cs], safe=False)
