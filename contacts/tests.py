@@ -1,6 +1,6 @@
 from django.test import TestCase
 from contacts.models import Contact
-from contacts.views import READ_ONLY_FIELDS, utcnow
+from contacts.views import READ_ONLY_FIELDS
 import json
 from base64 import b64encode
 from time import sleep
@@ -16,7 +16,7 @@ class TestAPI(TestCase):
         auth_headers = {'HTTP_AUTHORIZATION': auth.decode()}
         response = self.client.generic('POST', '/api/', data, **auth_headers)
         self.assertEqual(response.status_code, 200)
-        response_dict = json.loads(response.content)
+        response_dict = json.loads(response.content.decode())
         c = Contact.objects.get(pk=response_dict['pk'])
         self.assertEqual(Contact.objects.count(), num_contacts+1)
         self.assertEqual(c.created_by.username, 'test_user')
@@ -34,7 +34,7 @@ class TestAPI(TestCase):
         c = Contact.objects.get(pk=pk)
         response = self.client.generic('GET', '/api/%s' % pk)
         self.assertEqual(response.status_code, 200)
-        response_dict = json.loads(response.content)
+        response_dict = json.loads(response.content.decode())
         for key, value in c.data_dict.items():
             self.assertEqual(response_dict[key], value)
 
@@ -67,12 +67,12 @@ class TestAPI(TestCase):
     def test_get_contact_list(self):
         response = self.client.generic('GET', '/api/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.content)),
+        self.assertEqual(len(json.loads(response.content.decode())),
                          Contact.objects.count())
         data = json.dumps({'address': 'Lambsbridge'})
         response = self.client.generic('GET', '/api/', data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.content)), 2)
+        self.assertEqual(len(json.loads(response.content.decode())), 2)
 
     def test_delete_contact(self):
         pk = 1

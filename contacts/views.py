@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import (
     JsonResponse,
     HttpResponseBadRequest, HttpResponseNotFound, HttpResponseForbidden)
@@ -34,7 +33,7 @@ def require_authentication(fn):
 
 @require_authentication
 def create_contact(request):
-    parameters = json.loads(request.body)
+    parameters = json.loads(request.body.decode())
     if set(parameters) & set(READ_ONLY_FIELDS):
         return HttpResponseBadRequest()
     parameters['created_by'] = request.user
@@ -44,7 +43,7 @@ def create_contact(request):
 
 def query_contacts(request):
     if request.body:
-        cs = Contact.objects.filter(**json.loads(request.body))
+        cs = Contact.objects.filter(**json.loads(request.body.decode()))
     else:
         cs = Contact.objects.all()
     return JsonResponse([c.data_dict for c in cs], safe=False)
@@ -60,7 +59,7 @@ def update_contact(request, pk):
     cs = Contact.objects.filter(pk=pk)
     if cs.count() != 1:
         raise Contact.DoesNotExist
-    parameters = json.loads(request.body)
+    parameters = json.loads(request.body.decode())
     if set(parameters) & set(READ_ONLY_FIELDS):
         return HttpResponseBadRequest()
     parameters['modified_by'] = request.user
