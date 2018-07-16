@@ -11,11 +11,11 @@ There are some unit/integration tests for testing each of the API endpoints. Ver
 ```
 ./manage.py test -v2
 ```
-To run the server, you must use **testserver**, not **runserver**. This is because the database is stored entirely in memory, so the application needs to load a fixture from a file. **empty_fixture.json** contains two users and no data.
+To run the server, you must use `testserver`, not `runserver`. This is because the database is stored entirely in memory, so the application needs to load a fixture from a file. `empty_fixture.json` contains two users and no data.
 ```
 ./manage.py testserver empty_fixture.json
 ```
-Alternatively, use **contacts/fixtures/test_fixture.json** to start with some initial test data.
+Alternatively, use `contacts/fixtures/test_fixture.json` to start with some initial test data.
 
 ## API
 ### Endpoints
@@ -27,14 +27,14 @@ PATCH | /api/**&lt;pk&gt;** | :heavy_check_mark: | :heavy_check_mark: | Replace 
 GET | /api/ | :heavy_check_mark: |  | Get a list of contacts (filterable).
 DELETE | /api/**&lt;pk&gt;** |  | :heavy_check_mark: | Delete a contact.
 
-The editable contact fields are **name**, **phone_number**, **address**, and **email**.
+The editable contact fields are `name`, `phone_number`, `address`, and `email`.
 
-Additionally, contacts can be filtered by **created**, **created_by**, **modified**, **modified_by**, and **pk**.
+Additionally, contacts can be filtered by `created`, `created_by`, `modified`, `modified_by`, and `pk`.
 
-The server will respond with **HTTP 200: OK** or **HTTP 400: Bad Request** depending on whether the request is successful or not. If authentication is required and fails, it will respond with **HTTP 403: Forbidden**.
+The server will respond with `HTTP 200: OK` or `HTTP 400: Bad Request` depending on whether the request is successful or not. If authentication is required and fails, it will respond with `HTTP 403: Forbidden`.
 
 ### Examples
-First let's create a contact. Only a **name** is required to create a new contact.
+First let's create a contact. Only a `name` is required to create a new contact.
 ```
 > curl --user test_user:test_password -X POST 127.0.0.1:8000/api/ --data '{"name": "Gordon", "email": "hubris@radham.edu"}'
 {
@@ -51,7 +51,7 @@ First let's create a contact. Only a **name** is required to create a new contac
 ```
 The response from the server is the json representation of the newly created contact.
 
-Now let's update our contact with the missing information. The only fields that can be changed directly are **name**, **phone_number**, **address**, and **email**.
+Now let's update our contact with the missing information. The only fields that can be changed directly are `name`, `phone_number`, `address`, and `email`.
 ```
 > curl --user test_user2:test_password2 -X PATCH 127.0.0.1:8000/api/6 --data '{"address": "Radham Academy", "phone_number": "1180905"}'
 {
@@ -66,9 +66,9 @@ Now let's update our contact with the missing information. The only fields that 
     "pk": 6
 }
 ```
-Notice that because we authenticated with a different user, the **created_by** and **modified_by** fields are different.
+Notice that because we authenticated with a different user, the `created_by` and `modified_by` fields are different.
 
-Let's search our contacts for everyone living at Radham with a primary key greater than or equal to 3. The field lookup conventions are the same as for Django **filter()** queries.
+Let's search our contacts for everyone living at Radham with a primary key greater than or equal to 3. The field lookup conventions are the same as for Django `filter()` queries.
 ```
 > curl -X GET 127.0.0.1:8000/api/ --data '{"address__icontains": "radham", "pk__gte": 3}'
 [
@@ -129,6 +129,6 @@ test_user2 | test_password2
 ### Change Logging
 - Each contact record stores a user id and a timestamp for both when it is created and its most recent update.
 - The user id is that of the authenticated user in the relevant request.
-- If a contact has never been updated, it will have a null value in its **modified_by** field.
+- If a contact has never been updated, it will have a null value in its `modified_by` field.
 - If a contact is updated multiple times, only the most recent update is stored.
 - Deleted contacts are not logged at all.
