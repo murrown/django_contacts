@@ -4,7 +4,6 @@ from time import sleep
 
 from django.test import TestCase
 from contacts.models import Contact
-from contacts.views import READ_ONLY_FIELDS
 
 
 class TestAPI(TestCase):
@@ -105,10 +104,11 @@ class TestAPI(TestCase):
             response = self.client.generic('PATCH', '/api/%s' % pk, data,
                                            **auth_headers)
             c = Contact.objects.get(pk=pk)
-            if key in READ_ONLY_FIELDS:
+            if key in Contact.READ_ONLY_FIELDS:
                 self.assertEqual(response.status_code, 400)
                 self.assertEqual(c.modified, old_modified)
             else:
+                self.assertIn(key, Contact.WRITABLE_FIELDS)
                 self.assertEqual(response.status_code, 200)
                 self.assertGreater(c.modified, old_modified)
                 sleep(0.1)
@@ -118,9 +118,10 @@ class TestAPI(TestCase):
                 data = json.dumps({key: value, 'name': 'Abby'})
             response = self.client.generic('POST', '/api/', data,
                                            **auth_headers)
-            if key in READ_ONLY_FIELDS:
+            if key in Contact.READ_ONLY_FIELDS:
                 self.assertEqual(response.status_code, 400)
                 self.assertEqual(Contact.objects.count(), num_contacts)
             else:
+                self.assertIn(key, Contact.WRITABLE_FIELDS)
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(Contact.objects.count(), num_contacts+1)

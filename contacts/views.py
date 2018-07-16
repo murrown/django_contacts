@@ -10,9 +10,6 @@ from django.http import (
 from contacts.models import Contact
 
 
-READ_ONLY_FIELDS = ['created', 'created_by', 'modified', 'modified_by', 'pk']
-
-
 def utcnow():
     """
     @return: Datetime object with the current time, set to the UTC timezone.
@@ -49,7 +46,7 @@ def create_contact(request):
     @return: JSON response containing the contact data (if successful).
     """
     parameters = json.loads(request.body.decode())
-    if set(parameters) & set(READ_ONLY_FIELDS):
+    if set(parameters) & Contact.READ_ONLY_FIELDS:
         return HttpResponseBadRequest()
     parameters['created_by'] = request.user
     c = Contact.objects.create(**parameters)
@@ -96,7 +93,7 @@ def update_contact(request, pk):
     if cs.count() != 1:
         raise Contact.DoesNotExist
     parameters = json.loads(request.body.decode())
-    if set(parameters) & set(READ_ONLY_FIELDS):
+    if set(parameters) & Contact.READ_ONLY_FIELDS:
         return HttpResponseBadRequest()
     parameters['modified_by'] = request.user
     parameters['modified'] = utcnow()

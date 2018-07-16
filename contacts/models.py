@@ -20,6 +20,12 @@ class Contact(models.Model):
     modified_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL,
                                     related_name='contact_modified_by')
 
+
+    READ_ONLY_FIELDS = {'pk', 'created', 'created_by',
+                        'modified', 'modified_by'}
+    WRITABLE_FIELDS = {'name', 'phone_number', 'address', 'email'}
+
+
     @property
     def data_dict(self):
         """
